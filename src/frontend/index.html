@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Платформа українського кіно</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>🎬 Платформа українського кіно</h1>
+        <p>Каталог українських стрічок</p>
+    </header>
+
+    <main>
+        <section class="filters">
+            <h2>Фільтрація та пошук</h2>
+            <select id="genre-select">
+                <option value="">Усі жанри</option>
+                <option value="Драма">Драма</option>
+                <option value="Мультфільм">Мультфільм</option>
+            </select>
+            <button id="filter-btn">Застосувати</button>
+        </section>
+
+        <section class="catalog">
+            <h2>Каталог фільмів</h2>
+            <div id="movies-container" class="movies-grid">
+                <!-- Сюди скрипт завантажить фільми з API -->
+            </div>
+        </section>
+    </main>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
