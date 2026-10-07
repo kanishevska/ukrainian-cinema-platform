@@ -1,40 +1,36 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="uk">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Платформа українського кіно</title>
-    <link rel="stylesheet" href="css/style.css" />
-  </head>
-  <body>
-    <header class="header">
-      <div class="header-content">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
         <h1>🎬 Платформа українського кіно</h1>
         <p>Каталог українських стрічок</p>
-      </div>
     </header>
 
-    <main class="main-content">
-      <section class="filters">
-        <div class="filter-group">
-          <label for="genre-select">Оберіть жанр:</label>
-          <select id="genre-select">
-            <option value="">Усі жанри</option>
-            <option value="Драма">Драма</option>
-            <option value="Мультфільм">Мультфільм</option>
-            <!-- Ви можете додати сюди інші жанри -->
-          </select>
-        </div>
-        <button id="filter-btn" class="btn">Застосувати</button>
-      </section>
+    <main>
+        <section class="filters">
+            <h2>Фільтрація та пошук</h2>
+            <select id="genre-select">
+                <option value="">Усі жанри</option>
+                <option value="Драма">Драма</option>
+                <option value="Мультфільм">Мультфільм</option>
+            </select>
+            <button id="filter-btn">Застосувати</button>
+        </section>
 
-      <section class="catalog">
-        <div id="movies-container" class="movies-grid">
-          <!-- Сюди ваш скрипт завантажить фільми з API -->
-        </div>
-      </section>
+        <section class="catalog">
+            <h2>Каталог фільмів</h2>
+            <div id="movies-container" class="movies-grid">
+                <!-- Сюди скрипт завантажить фільми з API -->
+            </div>
+        </section>
     </main>
 
     <script src="js/app.js"></script>
-  </body>
+</body>
 </html>
