@@ -1,36 +1,342 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="uk">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Платформа українського кіно</title>
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-    <header>
-        <h1>🎬 Платформа українського кіно</h1>
-        <p>Каталог українських стрічок</p>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="container header-flex">
+        <h1>🎬 Українське Кіно</h1>
+        <div class="user-panel" id="user-panel">
+          <button id="login-btn" class="btn btn-outline">Увійти</button>
+          <button id="register-btn" class="btn btn-primary">Реєстрація</button>
+        </div>
+      </div>
     </header>
 
-    <main>
-        <section class="filters">
-            <h2>Фільтрація та пошук</h2>
-            <select id="genre-select">
-                <option value="">Усі жанри</option>
-                <option value="Драма">Драма</option>
-                <option value="Мультфільм">Мультфільм</option>
-            </select>
-            <button id="filter-btn">Застосувати</button>
-        </section>
+    <main class="container main-content">
+      <section class="filters-card">
+        <div class="search-box">
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Пошук за назвою, режисером, актором..."
+          />
+        </div>
+        <div class="filter-controls">
+          <select id="genre-filter">
+            <option value="">Усі жанри</option>
+            <option value="Драма">Драма</option>
+            <option value="Комедія">Комедія</option>
+            <option value="Історичний">Історичний</option>
+            <option value="Анімація">Анімація</option>
+          </select>
+          <select id="mediatype-filter">
+            <option value="">Усі типи медіа</option>
+            <option value="Фільм">Фільм</option>
+            <option value="Серіал">Серіал</option>
+            <option value="Мультфільм">Мультфільм</option>
+          </select>
+          <input
+            type="number"
+            id="year-filter"
+            placeholder="Рік випуску"
+            style="padding: 10px; border: 1px solid #ccc; border-radius: 6px"
+          />
+          <select id="sort-select">
+            <option value="">Сортування за замовчуванням</option>
+            <option value="rating">Найвищий рейтинг</option>
+            <option value="popularity">Популярність</option>
+          </select>
+          <button id="apply-filters" class="btn btn-primary">
+            Застосувати
+          </button>
+        </div>
+      </section>
 
-        <section class="catalog">
-            <h2>Каталог фільмів</h2>
-            <div id="movies-container" class="movies-grid">
-                <!-- Сюди скрипт завантажить фільми з API -->
+      <!-- Панель адміністратора -->
+      <section id="admin-panel" class="admin-panel hidden">
+        <div
+          class="container"
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
+          <h3>⚙️ Панель управління адміністратора</h3>
+          <button id="open-add-movie-modal" class="btn btn-success">
+            + Додати новий фільм
+          </button>
+        </div>
+        <!-- Кнопка в секції адмін-панелі -->
+        <button
+          id="open-users-modal"
+          class="btn btn-outline"
+          style="background: white; margin-left: 10px"
+        >
+          👥 Управління користувачами
+        </button>
+
+        <!-- Модальне вікно управління користувачами -->
+        <div id="users-modal" class="modal hidden">
+          <div
+            class="modal-content"
+            style="max-width: 650px; max-height: 80vh; overflow-y: auto"
+          >
+            <span id="close-users-modal" class="close">&times;</span>
+            <h2 style="color: var(--primary); margin-bottom: 15px">
+              👥 Список користувачів платформи
+            </h2>
+            <div
+              id="users-list-container"
+              style="display: flex; flex-direction: column; gap: 10px"
+            >
+              <!-- Динамічно завантажується через JS -->
             </div>
-        </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="catalog">
+        <div id="movies-grid" class="movies-grid"></div>
+      </section>
+
+      <!-- Пагінація -->
+      <div
+        id="pagination-container"
+        class="pagination-container"
+        style="
+          display: flex;
+          justify-content: center;
+          gap: 10px;
+          margin: 30px 0;
+        "
+      ></div>
     </main>
 
+    <!-- Модальне вікно Деталей фільму, трейлера та відгуків -->
+    <div id="movie-details-modal" class="modal hidden">
+      <div
+        class="modal-content"
+        style="max-width: 750px; max-height: 90vh; overflow-y: auto"
+      >
+        <span id="close-details-modal" class="close">&times;</span>
+        <div id="movie-details-body"></div>
+      </div>
+    </div>
+
+    <!-- Модальне вікно списку «Подивитися пізніше» -->
+    <div id="watchlist-modal" class="modal hidden">
+      <div
+        class="modal-content"
+        style="max-width: 600px; max-height: 80vh; overflow-y: auto"
+      >
+        <span id="close-watchlist-modal" class="close">&times;</span>
+        <h2 style="color: var(--primary); margin-bottom: 15px">
+          📌 Мій список «Подивитися пізніше»
+        </h2>
+        <div
+          id="watchlist-items-container"
+          style="display: flex; flex-direction: column; gap: 10px"
+        ></div>
+      </div>
+    </div>
+
+    <!-- Модальне вікно Входу та Реєстрації -->
+    <div id="auth-modal" class="modal hidden">
+      <div class="modal-content">
+        <span id="close-modal" class="close">&times;</span>
+
+        <form id="login-form" class="auth-form">
+          <h2>Вхід до системи</h2>
+          <input
+            type="email"
+            id="login-email"
+            placeholder="Email"
+            required
+            autocomplete="email"
+          />
+          <input
+            type="password"
+            id="login-password"
+            placeholder="Пароль"
+            required
+            autocomplete="current-password"
+          />
+          <button type="submit" class="btn btn-primary">Увійти</button>
+          <p class="switch-text">
+            Ще не маєте акаунта?
+            <a href="#" id="to-register">Зареєструватися</a>
+          </p>
+        </form>
+
+        <form id="register-form" class="auth-form hidden">
+          <h2>Реєстрація акаунта</h2>
+          <input
+            type="text"
+            id="reg-username"
+            placeholder="Ім'я користувача"
+            required
+            autocomplete="username"
+          />
+          <input
+            type="email"
+            id="reg-email"
+            placeholder="Email"
+            required
+            autocomplete="email"
+          />
+          <input
+            type="password"
+            id="reg-password"
+            placeholder="Пароль (мін. 6 символів)"
+            required
+            autocomplete="new-password"
+          />
+          <button type="submit" class="btn btn-primary">Зареєструватися</button>
+          <p class="switch-text">
+            Вже маєте акаунт? <a href="#" id="to-login">Увійти</a>
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <!-- Модальне вікно для Адміна (Додавання/Редагування фільму) -->
+    <div id="movie-modal" class="modal hidden">
+      <div class="modal-content" style="max-width: 600px">
+        <span id="close-movie-modal" class="close">&times;</span>
+        <h2 id="modal-title" style="margin-bottom: 15px; color: var(--primary)">
+          Додати новий фільм
+        </h2>
+        <form id="movie-form" class="auth-form">
+          <input
+            type="text"
+            id="movie-title"
+            placeholder="Назва фільму"
+            required
+          />
+          <input
+            type="number"
+            id="movie-year"
+            placeholder="Рік випуску"
+            required
+          />
+          <input type="text" id="movie-genre" placeholder="Жанр" required />
+          <select
+            id="movie-mediatype"
+            required
+            style="padding: 10px; border: 1px solid #ccc; border-radius: 5px"
+          >
+            <option value="Фільм">Фільм</option>
+            <option value="Серіал">Серіал</option>
+            <option value="Мультфільм">Мультфільм</option>
+          </select>
+          <input
+            type="text"
+            id="movie-director"
+            placeholder="Режисер"
+            required
+          />
+          <input
+            type="text"
+            id="movie-poster"
+            placeholder="URL постера"
+            required
+          />
+          <input
+            type="text"
+            id="movie-trailer"
+            placeholder="URL трейлера YouTube"
+            required
+          />
+          <textarea
+            id="movie-desc"
+            placeholder="Опис сюжету"
+            rows="4"
+            required
+            style="padding: 10px; border: 1px solid #ccc; border-radius: 5px"
+          ></textarea>
+          <button type="submit" class="btn btn-primary">Зберегти фільм</button>
+        </form>
+      </div>
+    </div>
+    <!-- Модальне вікно профілю -->
+    <div id="profile-modal" class="modal hidden">
+      <div class="modal-content" style="max-width: 400px; text-align: center">
+        <span id="close-profile-modal" class="close">&times;</span>
+        <h2 style="color: var(--primary); margin-bottom: 15px">
+          👤 Мій профіль
+        </h2>
+
+        <!-- Прев'ю аватара -->
+        <div style="margin-bottom: 15px">
+          <img
+            id="profile-avatar-preview"
+            src=""
+            alt="Avatar Preview"
+            style="
+              width: 80px;
+              height: 80px;
+              border-radius: 50%;
+              object-fit: cover;
+              border: 2px solid var(--primary);
+              display: inline-block;
+              background: #eee;
+            "
+          />
+        </div>
+
+        <form
+          id="profile-form"
+          style="
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            text-align: left;
+          "
+        >
+          <label>Ім'я:</label>
+          <input
+            type="text"
+            id="profile-username"
+            required
+            class="form-input"
+          />
+
+          <label>Email:</label>
+          <input type="email" id="profile-email" required class="form-input" />
+
+          <label>Новий пароль:</label>
+          <input
+            type="password"
+            id="profile-password"
+            class="form-input"
+            placeholder="Залиште порожнім"
+            autocomplete="new-password"
+          />
+
+          <label>URL аватара:</label>
+          <input
+            type="text"
+            id="profile-avatar"
+            class="form-input"
+            placeholder="https://example.com/avatar.jpg"
+          />
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            style="margin-top: 10px"
+          >
+            Зберегти зміни
+          </button>
+        </form>
+      </div>
+    </div>
     <script src="js/app.js"></script>
-</body>
+  </body>
 </html>

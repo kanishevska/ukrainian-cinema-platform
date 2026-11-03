@@ -1,33 +1,42 @@
-class User {
-    constructor(id, username, email, role = 'Guest') {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.role = role; // 'Guest', 'RegisteredUser', 'Admin'
-    }
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
-    getUserInfo() {
-        return {
-            id: this.id,
-            username: this.username,
-            email: this.email,
-            role: this.role
-        };
-    }
-}
+const userSchema = new mongoose.Schema(
+  {
+    username: { type: String, required: true, unique: true, trim: true },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true
+    },
+    passwordHash: { type: String, required: true },
+    role: {
+      type: String,
+      enum: ["Guest", "RegisteredUser", "Admin"],
+      default: "RegisteredUser"
+    },
+    watchlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Movie" }],
+    avatarUrl: { type: String, default: "" },
+    isBanned: { type: Boolean, default: false } // Поле для блокування
+  },
+  { timestamps: true }
+);
 
-class RegisteredUser extends User {
-    constructor(id, username, email, passwordHash) {
-        super(id, username, email, 'RegisteredUser');
-        this.passwordHash = passwordHash;
-    }
-}
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("passwordHash")) return next();
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.passwordHash = await bcrypt.hash(this.passwordHash, salt);
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
-class Admin extends RegisteredUser {
-    constructor(id, username, email, passwordHash) {
-        super(id, username, email, passwordHash);
-        this.role = 'Admin';
-    }
-}
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.passwordHash);
+};
 
-module.exports = { User, RegisteredUser, Admin };
+module.exports = mongoose.model("User", userSchema);
